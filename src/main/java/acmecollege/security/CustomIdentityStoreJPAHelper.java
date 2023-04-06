@@ -15,7 +15,6 @@ package acmecollege.security;
 
 import static acmecollege.utility.MyConstants.PARAM1;
 import static acmecollege.utility.MyConstants.PU_NAME;
-
 import static java.util.Collections.emptySet;
 
 import java.util.Set;
@@ -32,7 +31,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
 @SuppressWarnings("unused")
 
 @Singleton
@@ -56,6 +55,13 @@ public class CustomIdentityStoreJPAHelper {
          *         requests will fail, none of the REST'ful endpoints will work.
          *  
          */
+        try {
+            TypedQuery<SecurityUser> q = em.createNamedQuery(SECURITY_USER_BY_NAME_QUERY, SecurityUser.class);
+            q.setParameter(PARAM1, username);
+            user = q.getSingleResult();
+        }
+        catch (NoResultException e) {
+        }
         return user;
     }
 

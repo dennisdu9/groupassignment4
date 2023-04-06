@@ -14,12 +14,30 @@
  */
 package acmecollege.entity;
 
+
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import acmecollege.rest.serializer.SecurityRoleSerializer;
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
 @SuppressWarnings("unused")
 
 /**
@@ -27,18 +45,34 @@ import java.util.Set;
  */
 
 //TODO - Make this into JPA entity and add all the necessary annotations
+@Entity
+@Table(name = "security_user")
+@NamedQuery(name = SECURITY_USER_BY_NAME_QUERY, query = "SELECT u FROM SecurityUser u WHERE u.username = :param1")
 public class SecurityUser implements Serializable, Principal {
     /** Explicit set serialVersionUID */
     private static final long serialVersionUID = 1L;
+    
+    public static final String SECURITY_USER_BY_NAME_QUERY = "SecurityUser.userByName";
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id", nullable = false)
     protected int id;
     
+    @Column(name = "username")
     protected String username;
     
+    @Column(name = "password_hash")
     protected String pwHash;
     
+    @OneToOne(optional = true)
+    @JoinColumn(name = "student_id", referencedColumnName = "id")
     protected Student student;
     
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @JoinTable(name = "user_has_role",
+        joinColumns = @JoinColumn(referencedColumnName = "user_id", name = "user_id"), // this entity, which is SecurityUser
+        inverseJoinColumns = @JoinColumn(referencedColumnName = "role_id", name = "role_id")) // the other entity, which is SecurityRole
     protected Set<SecurityRole> roles = new HashSet<SecurityRole>();
 
     public SecurityUser() {
@@ -70,6 +104,7 @@ public class SecurityUser implements Serializable, Principal {
     }
 
     // TODO SU01 - Setup custom JSON serializer
+    @JsonSerialize(using = SecurityRoleSerializer.class)
     public Set<SecurityRole> getRoles() {
         return roles;
     }

@@ -6,8 +6,8 @@
 		name="acmecollegeDB" res-type="javax.sql.DataSource">
 		<property name="databaseName" value="acmecollege"></property>
 		<property name="serverName" value="localhost"></property>
-		<property name="user" value="cst8277"></property>
-		<property name="password" value="8277"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value=""></property>
 		<property name="portNumber" value="3306"></property>
 		<property name="useSSL" value="false"></property>
 		<property name="allowPublicKeyRetrieval" value="true"></property>

@@ -32,6 +32,7 @@ import static acmecollege.utility.MyConstants.PROPERTY_KEY_SIZE;
 import static acmecollege.utility.MyConstants.PROPERTY_SALT_SIZE;
 import static acmecollege.utility.MyConstants.PU_NAME;
 import static acmecollege.utility.MyConstants.USER_ROLE;
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -63,7 +64,8 @@ import acmecollege.entity.SecurityRole;
 import acmecollege.entity.SecurityUser;
 import acmecollege.entity.Student;
 import acmecollege.entity.StudentClub;
-
+import static acmecollege.entity.SecurityUser.SECURITY_USER_BY_NAME_QUERY;
+import static acmecollege.entity.SecurityRole.SECURITY_ROLE_BY_NAME_QUERY;
 @SuppressWarnings("unused")
 
 /**
@@ -112,7 +114,10 @@ public class ACMECollegeService implements Serializable {
         String pwHash = pbAndjPasswordHash.generate(DEFAULT_USER_PASSWORD.toCharArray());
         userForNewStudent.setPwHash(pwHash);
         userForNewStudent.setStudent(newStudent);
-        SecurityRole userRole = /* TODO ACMECS01 - Use NamedQuery on SecurityRole to find USER_ROLE */ null;
+//        SecurityRole userRole = /* TODO ACMECS01 - Use NamedQuery on SecurityRole to find USER_ROLE */ null;
+        TypedQuery<SecurityRole> userRoleQ = em.createNamedQuery(SECURITY_ROLE_BY_NAME_QUERY, SecurityRole.class);
+        userRoleQ.setParameter(PARAM1, USER_ROLE);
+        SecurityRole userRole = userRoleQ.getSingleResult();
         userForNewStudent.getRoles().add(userRole);
         userRole.getUsers().add(userForNewStudent);
         em.persist(userForNewStudent);
@@ -171,11 +176,12 @@ public class ACMECollegeService implements Serializable {
         Student student = getStudentById(id);
         if (student != null) {
             em.refresh(student);
-            TypedQuery<SecurityUser> findUser = 
+            TypedQuery<SecurityUser> findUser =  em.createNamedQuery(SECURITY_USER_BY_NAME_QUERY, SecurityUser.class);
+            findUser.setParameter(PARAM1, student.getId());
                 /* TODO ACMECS02 - Use NamedQuery on SecurityRole to find this related Student
                    so that when we remove it, the relationship from SECURITY_USER table
                    is not dangling
-                */ null;
+                */ 
             SecurityUser sUser = findUser.getSingleResult();
             em.remove(sUser);
             em.remove(student);
