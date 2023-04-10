@@ -57,6 +57,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import acmecollege.entity.ClubMembership;
+import acmecollege.entity.Course;
 import acmecollege.entity.CourseRegistration;
 import acmecollege.entity.MembershipCard;
 import acmecollege.entity.Professor;
@@ -88,6 +89,7 @@ public class ACMECollegeService implements Serializable {
         CriteriaQuery<Student> cq = cb.createQuery(Student.class);
         cq.select(cq.from(Student.class));
         return em.createQuery(cq).getResultList();
+        
     }
 
     public Student getStudentById(int id) {
@@ -215,6 +217,21 @@ public class ACMECollegeService implements Serializable {
         allQuery.setParameter(PARAM1, id);
         return allQuery.getSingleResult();
     }
+    
+    @Transactional
+    public <T> T persist(T newe) {
+        em.persist(newe);
+        return newe;
+    }
+    
+    public <T> void delete(Class<T> entity, String namedQuery,int id) {
+    	T exist = getById(entity,namedQuery, id);
+    	if ( exist != null) {
+    		em.refresh(exist);
+    		em.remove(exist);
+    	}
+    	
+    }
 
     @Transactional
     public StudentClub deleteStudentClub(int id) {
@@ -285,6 +302,13 @@ public class ACMECollegeService implements Serializable {
             em.flush();
         }
         return clubMembershipToBeUpdated;
+    }
+    
+    public List<Course> getAllCourses() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Course> cq = cb.createQuery(Course.class);
+        cq.select(cq.from(Course.class));
+        return em.createQuery(cq).getResultList();
     }
     
 }
