@@ -218,6 +218,12 @@ public class ACMECollegeService implements Serializable {
         return allQuery.getSingleResult();
     }
     
+    public <T> List<T> getListById(Class<T> entity, String namedQuery, int id) {
+        TypedQuery<T> allQuery = em.createNamedQuery(namedQuery, entity);
+        allQuery.setParameter(PARAM1, id);
+        return allQuery.getResultList();
+    }
+    
     @Transactional
     public <T> T persist(T newe) {
         em.persist(newe);

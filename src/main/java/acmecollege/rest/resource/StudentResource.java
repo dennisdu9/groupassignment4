@@ -118,11 +118,11 @@ public class StudentResource {
         return response;
     }
     
-    @DELETE
-    @RolesAllowed({ADMIN_ROLE})
-    @Path("/{id}")
-    public Response deleteStudent(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id ) {
-    	service.delete(Student.class,Student.QUERY_STUDENT_BY_ID, id);
-    	return Response.ok().build();
-    }
+//    @DELETE
+//    @RolesAllowed({ADMIN_ROLE})
+//    @Path("/{id}")
+//    public Response deleteStudent(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id ) {
+//    	service.delete(Student.class,Student.QUERY_STUDENT_BY_ID, id);
+//    	return Response.ok().build();
+//    }
 }
