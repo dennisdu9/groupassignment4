@@ -1,10 +1,10 @@
 package acmecollege.rest.resource;
 
 import static acmecollege.utility.MyConstants.ADMIN_ROLE;
-import static acmecollege.utility.MyConstants.USER_ROLE;
-import static acmecollege.utility.MyConstants.PROFESSOR_SUBRESOURCE_NAME;
+import static acmecollege.utility.MyConstants.COURSE_RESOURCE_NAME;
 import static acmecollege.utility.MyConstants.RESOURCE_PATH_ID_ELEMENT;
 import static acmecollege.utility.MyConstants.RESOURCE_PATH_ID_PATH;
+import static acmecollege.utility.MyConstants.USER_ROLE;
 
 import java.util.List;
 
@@ -26,53 +26,55 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import acmecollege.ejb.ACMECollegeService;
-import acmecollege.entity.Professor;
+import acmecollege.entity.Course;
 
-@Path(PROFESSOR_SUBRESOURCE_NAME)
+@Path(COURSE_RESOURCE_NAME)
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ProfessorResoure {
+public class CourseResource {
+	
 	private static final Logger LOG = LogManager.getLogger();
-
-    @EJB
+	
+	@EJB
     protected ACMECollegeService service;
 
     @Inject
     protected SecurityContext sc;
-    
+
     @GET
     @RolesAllowed({ADMIN_ROLE})
-    public Response getProfessors() {
-        LOG.debug("retrieving all professors ...");
-        List<Professor> professors = service.getAll(Professor.class,"Professor.findAll");
-        Response response = Response.ok(professors).build();
+    public Response getCourses() {
+        LOG.debug("retrieving all courses ...");
+        List<Course> courses = service.getAllCourses();
+        Response response = Response.ok(courses).build();
         return response;
     }
     
     @GET
     @RolesAllowed({ADMIN_ROLE, USER_ROLE})
     @Path(RESOURCE_PATH_ID_PATH)
-    public Response getProfessor(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
-        LOG.debug("retrieving professor  ..." + id);
-        Professor professor = service.getById(Professor.class,"Professor.findById", id);
-        Response response = Response.ok(professor).build();
-        return response;
+    public Response getCourse(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id) {
+    	 LOG.debug("retrieving course  ..." + id);
+    	 Course course = service.getById(Course.class,Course.COURSES_BY_ID_QUERY, id);
+         Response response = Response.ok(course).build();
+         return response;
     }
     
     @POST
     @RolesAllowed({ADMIN_ROLE})
-    public Response addProfessor(Professor newProfessor) {
+    public Response addCourse(Course course) {
         Response response = null;
-        Professor newProfessorWithIdTimestamps = service.persist(newProfessor);
-        response = Response.ok(newProfessorWithIdTimestamps).build();
+        Course newCourseWithIdTimestamps = service.persist(course);
+        response = Response.ok(newCourseWithIdTimestamps).build();
         return response;
     }
     
     @DELETE
     @RolesAllowed({ADMIN_ROLE})
     @Path("/{id}")
-    public Response deleteProfessor(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id ) {
-    	service.delete(Professor.class,"Professor.findById", id);
+    public Response deleteCourse(@PathParam(RESOURCE_PATH_ID_ELEMENT) int id ) {
+    	service.delete(Course.class,Course.COURSES_BY_ID_QUERY, id);
     	return Response.ok().build();
     }
+
 }
